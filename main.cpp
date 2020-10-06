@@ -8,9 +8,9 @@ using namespace std;
 class Automat {
 public:
     Automat() {
-      for (char c = 'a'; c <= 'z'; ++c) {
-        alphabet.insert(c);
-      }
+//      for (char c = 'a'; c <= 'z'; ++c) {
+//        alphabet.insert(c);
+//      }
     }
 
     void full_dka() {
@@ -68,6 +68,17 @@ public:
     }
 
 
+    void min_full_dka() {
+      map<int, int> cur_class;
+      for (auto &t : vertex) {
+        if (final.count(t)) {
+          cur_class[t] = 1;
+        } else {
+          cur_class[t] = 0;
+        }
+      }
+    }
+
     void print() {
       cout << "final: ";
       for (auto &t : final) {
@@ -85,7 +96,7 @@ public:
       }
     }
 
-    set<char> alphabet;
+    set<char> alphabet = {'a', 'b'};
     set<int> vertex;
     set<int> final; // <= vertex
     int begin = 0; // default value
@@ -95,9 +106,26 @@ public:
 
 int main() {
   Automat x;
-  x.final = {1};
-  x.vertex = {0, 1, 2};
-  x.state_transition_function = {{{0, 'a'}, {1, 2}}};
+  x.vertex = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
+  x.final = {0, 9};
+  x.state_transition_function.insert({{{0, 'a'}, {1, 3}}});
+  x.state_transition_function.insert({{{0, 'b'}, {2, 4}}});
+  x.state_transition_function.insert({{{1, 'a'}, {0}}});
+  x.state_transition_function.insert({{{2, 'b'}, {0}}});
+  x.state_transition_function.insert({{{3, 'b'}, {5}}});
+  x.state_transition_function.insert({{{4, 'a'}, {5}}});
+  x.state_transition_function.insert({{{5, 'a'}, {6}}});
+  x.state_transition_function.insert({{{5, 'b'}, {6}}});
+  x.state_transition_function.insert({{{6, 'a'}, {7}}});
+  x.state_transition_function.insert({{{6, 'b'}, {8, 9}}});
+  x.state_transition_function.insert({{{7, 'b'}, {6}}});
+  x.state_transition_function.insert({{{8, 'a'}, {6}}});
+  x.state_transition_function.insert({{{9, 'a'}, {3, 10}}});
+  x.state_transition_function.insert({{{9, 'b'}, {4, 11}}});
+  x.state_transition_function.insert({{{10, 'a'}, {9}}});
+  x.state_transition_function.insert({{{11, 'b'}, {9}}});
+
+
   x.full_dka();
   x.print();
 }
