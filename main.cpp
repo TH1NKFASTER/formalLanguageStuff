@@ -58,23 +58,74 @@ public:
       final = new_final;
       state_transition_function = new_state_transition_function;
       begin = 0;
-      for (auto &t : new_numbers) {
-        cout << t.second << ": ";
-        for (auto &h : t.first) {
-          cout << h << " ";
-        }
-        cout << endl;
-      }
+//      for (auto &t : new_numbers) {
+//        cout << t.second << ": ";
+//        for (auto &h : t.first) {
+//          cout << h << " ";
+//        }
+//        cout << endl;
+//      }
     }
 
 
     void min_full_dka() {
+      full_dka();
       map<int, int> cur_class;
       for (auto &t : vertex) {
         if (final.count(t)) {
           cur_class[t] = 1;
         } else {
           cur_class[t] = 0;
+        }
+      }
+      vector<vector<int>> combination(vertex.size(), vector<int>(alphabet.size() + 1));
+      for (int i = 0; i < vertex.size(); ++i) {
+        combination[i][0] = cur_class[i];
+      }
+      for (int i = 0; i < vertex.size(); ++i) {
+        for (int j = 1; j <= alphabet.size(); ++j) {
+          combination[i][j] = cur_class[*state_transition_function[{i, 'a' + j - 1}].begin()];
+        }
+      }
+      int new_class = 0;
+
+      auto prev_class = cur_class;
+      do {
+        prev_class = cur_class;
+        new_class = 0;
+        map<vector<int>, int> num;
+        for (int i = 0; i < vertex.size(); ++i) {
+          if (num.find(combination[i]) == num.end()) {
+            num[combination[i]] = new_class;
+            cur_class[i] = new_class;
+            ++new_class;
+          } else {
+            cur_class[i] = num[combination[i]];
+          }
+        }
+        for (int i = 0; i < vertex.size(); ++i) {
+          combination[i][0] = cur_class[i];
+        }
+        for (int i = 0; i < vertex.size(); ++i) {
+          for (int j = 1; j <= alphabet.size(); ++j) {
+            combination[i][j] = cur_class[*state_transition_function[{i, 'a' + j - 1}].begin()];
+          }
+        }
+
+      } while (prev_class != cur_class);
+      vertex.clear();
+      for (int i = 0; i < new_class; ++i) {
+        vertex.insert(i);
+      }
+      set<int> new_final;
+      for (auto &t : final) {
+        new_final.insert(cur_class[t]);
+      }
+      final = new_final;
+      state_transition_function.clear();
+      for (int v = 0; v < vertex.size(); ++v) {
+        for (int i = 1; i <= alphabet.size(); ++i) {
+          state_transition_function[{v, 'a' + i - 1}] = {combination[v][i]};
         }
       }
     }
@@ -124,8 +175,15 @@ int main() {
   x.state_transition_function.insert({{{9, 'b'}, {4, 11}}});
   x.state_transition_function.insert({{{10, 'a'}, {9}}});
   x.state_transition_function.insert({{{11, 'b'}, {9}}});
-
-
-  x.full_dka();
+//  x.vertex = {0, 1, 2};
+//  x.final = {1, 2};
+//  x.state_transition_function.insert({{0, 'a'}, {1}});
+//  x.state_transition_function.insert({{0, 'b'}, {2}});
+//  auto t = x;
+//  x.min_full_dka();
+  x.min_full_dka();
   x.print();
+//  cout << endl;
+//  cout << endl;
+//  x.print();
 }
